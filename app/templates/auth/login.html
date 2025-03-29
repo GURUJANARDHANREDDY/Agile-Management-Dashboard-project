@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{%block head%}
+<style>
+ @import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
+* {
+box-sizing: border-box;
+}
+body {
+background: linear-gradient(135deg, #f168d3, #c59feb);
+color: #e6e0fc;
+font-family: 'Muli', sans-serif;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+height: 100vh;
+overflow: hidden;
+margin: 0;
+}
+.container {
+background-color: rgba(252, 252, 252, 0.368);
+padding: 20px 40px;
+border-radius: 5px;
+}
+.container h1 {
+text-align: center;
+margin-bottom: 30px;
+}
+.container a {
+text-decoration: none;
+color:rgba(82, 110, 255, 0.9);
+}
+.btn {
+cursor: pointer;
+display: inline-block;
+width: 100%;
+background: rgba(79, 70, 188, 0.683);
+padding: 15px;
+font-family: inherit;
+font-size: 16px;
+border: 0;
+border-radius: 5px;
+}
+.btn:focus {
+outline: 0;
+}
+.btn:active {
+transform: scale(0.98);
+}
+.text {
+margin-top: 30px;
+}
+.form-control {
+position: relative;
+margin: 20px 0 40px;
+width: 300px;
+}
+.alert {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        text-align: center;
+    }
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+}
+.form-control input {
+background-color: transparent;
+border: 0;
+border-bottom: 2px #1e1d1d solid;
+display: block;
+width: 100%;
+padding: 15px 0;
+font-size: 18px;
+color: #2b2b2f;
+}
+.form-control input:focus,
+.form-control input:valid {
+outline: 0;
+border-bottom-color: rgb(133, 141, 252);
+}
+.form-control label {
+position: absolute;
+top: 15px;
+left: 0;
+pointer-events: none;
+}
+.form-control label span {
+display: inline-block;
+font-size: 18px;
+min-width: 5px;
+transition: 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+button:hover {
+        background: #764ba2;
+    }
+.form-control input:focus + label span,
+.form-control input:valid + label span {
+color:rgb(235, 107, 255);
+transform: translateY(-30px);
+}
+.text{
+    color: #282425;
+}
+</style>
+{%endblock head%}
+{%block content%}
+<div class="container">  
+    <div class="row d-flex justify-content-center">
+        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+        {% with messages=get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category,message in messages %}
+        <div class="alert alert-{{category}}">
+            <strong>{{message}}</strong>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    <h1>Please Login</h1>  
+    <form action="{{ url_for('auth.verify') }}" method="post">  
+     <div class="form-control">  
+      <input type="text" placeholder="Email" name="email" value="{{ request.form.get('email','') }}" autocomplete="off" required>  
+     
+         </div>  
+     <div class="form-control">  
+      <input type="password" name="password" placeholder="Password" value="{{ request.form.get('password','') }}"required>  
+     
+     </div>  
+     <a href="{{url_for('auth.redirect_forgot_password')}}">Forgot Password?</a> </p>  
+     <button class="btn">Login</button>  
+
+     <p class="text">Don't have an account? <a href="{{url_for('auth.register')}}">Register</a> </p>  
+     <p class="text">Are you admin? <a href="{{url_for('admin.adminIndex')}}">Admin Login</a> </p>  
+     
+    </form>  
+   </div>  
+
+{%endblock content%}

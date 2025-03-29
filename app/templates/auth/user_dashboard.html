@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>Project Dashboard</h1>
+
+
+
+
+        <!-- Project Chart -->
+        <div class="dashboard-content">
+            <div class="chart-container">
+                <canvas id="projectChart"></canvas>
+            </div>
+            <div class="header-right">
+                <button class="add-project-btn" onclick="window.location.href='{{ url_for('main.add_project_page') }}'">
+                    <i class="fas fa-plus-circle"></i> Add new project
+                </button>
+            </div>
+        </div>
+
+        <!-- Projects Table -->
+        <div class="projects-table-container">
+            <h2>Projects List</h2>
+            <table class="projects-table">
+                <thead>
+                    <tr>
+                        <th>Project ID</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Product Owner</th>
+                        <th>Status</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for project in projects %}
+                    <tr class="status-{{ project.status }}">
+                        <td>{{ project.project_id }}</td>
+                        <td>{{ project.project_name }}</td>
+                        <td>{{ project.project_description }}</td>
+                        <td>{{ project.product_owner }}</td>
+                        <td>
+                            <div class="status-container">
+                                <span class="status-badge {{ project.status }}">
+                                    {{ project.status.title() }}
+                                </span>
+                                {% if project.auto_calculated %}
+                                <span class="auto-status-indicator" title="Status automatically calculated">
+                                    <i class="fas fa-sync-alt"></i>
+                                </span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>{{ project.start_date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ project.end_date.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            <a href="{{ url_for('main.view_project', project_id=project.project_id) }}" class="btn-view">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <button onclick="editProject('{{ project.project_id }}')" class="btn-edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Initialize project chart
+        const ctx = document.getElementById('projectChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Pending', 'Ongoing', 'Completed'],
+                datasets: [{
+                    data: [{{ pending_count }}, {{ ongoing_count }}, {{ completed_count }}],
+                    backgroundColor: ['#FFA500', '#4CAF50', '#2196F3']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Project Status Distribution'
+                    }
+                }
+            }
+        });
+
+        // Project actions
+        function viewProject(projectId) {
+            window.location.href = `/project/${projectId}`;
+        }
+
+        function editProject(projectId) {
+            window.location.href = `/project/${projectId}/edit`;
+        }
+
+        // Open new project form
+        document.getElementById('openFormBtn').addEventListener('click', function() {
+            window.location.href = '/new-project';
+        });
+    </script>
+
+    <style>
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .projects-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .projects-table th,
+        .projects-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+
+        .status-badge.pending,
+        .status-badge.not_started {
+            background: #FFA500;
+            color: white;
+        }
+
+        .status-badge.ongoing {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .status-badge.completed {
+            background: #2196F3;
+            color: white;
+        }
+
+        .status-badge.delayed {
+            background: #dc3545;
+            color: white;
+        }
+
+        .status-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .auto-status-indicator {
+            color: #6c757d;
+            font-size: 0.8em;
+        }
+
+        .btn-view,
+        .btn-edit {
+            padding: 5px 10px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-view {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-edit {
+            background: #FFA500;
+            color: white;
+        }
+
+        .chart-container {
+            width: 500px;
+            margin: 20px auto;
+        }
+    </style>
+</body>
+</html>

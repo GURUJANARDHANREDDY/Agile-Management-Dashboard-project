@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ project.project_name }} - Project Summary</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .summary-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .summary-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .summary-section {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        .summary-section h3 {
+            color: #007bff;
+            margin-bottom: 0.5rem;
+        }
+        .team-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .team-member {
+            padding: 0.5rem;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .completion-status {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .completion-bar {
+            flex-grow: 1;
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .completion-value {
+            height: 100%;
+            background-color: #28a745;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="summary-container">
+        <a href="{{ url_for('main.view_project', project_id=project.project_id) }}" class="styled-button">Back to Project</a>
+        
+        <div class="summary-header">
+            <h1>{{ project.project_name }}</h1>
+            <p>Project Overview Summary</p>
+        </div>
+
+        <div class="summary-section">
+            <h3>Project Details</h3>
+            <p><strong>Description:</strong> {{ project.project_description }}</p>
+            <p><strong>Product Owner:</strong> {{ project.product_owner }}</p>
+            <p><strong>Current Status:</strong> <span class="status-badge status-{{ project.status.lower() }}">{{ project.status }}</span></p>
+        </div>
+
+        <div class="summary-section">
+            <h3>Timeline</h3>
+            <p><strong>Start Date:</strong> {{ project.start_date.strftime('%Y-%m-%d') }}</p>
+            <p><strong>End Date:</strong> {{ project.end_date.strftime('%Y-%m-%d') }}</p>
+            {% if project.revised_end_date %}
+            <p><strong>Revised End Date:</strong> {{ project.revised_end_date.strftime('%Y-%m-%d') }}</p>
+            {% endif %}
+        </div>
+
+        <div class="summary-section">
+            <h3>Team Members</h3>
+            <ul class="team-list">
+                {% for member in project.development_team %}
+                <li class="team-member">{{ member }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="summary-section">
+            <h3>Project Progress</h3>
+            <div class="completion-status">
+                <span>Overall Completion:</span>
+                <div class="completion-bar">
+                    <div class="completion-value" style="width: {{ project_stats.completion_percentage }}%"></div>
+                </div>
+                <span>{{ "%.1f"|format(project_stats.completion_percentage) }}%</span>
+            </div>
+            <p><strong>Total Stories:</strong> {{ project_stats.total_stories }}</p>
+            <p><strong>Completed Stories:</strong> {{ project_stats.completed_stories }}</p>
+            <p><strong>Total Story Points:</strong> {{ project_stats.total_points }}</p>
+        </div>
+    </div>
+</body>
+</html>
